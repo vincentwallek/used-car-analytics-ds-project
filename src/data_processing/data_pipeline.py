@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 def _run(cmd: list[str]) -> None:
-    print("\n$ " + " ".join(cmd))
+    print("\\n$ " + " ".join(cmd))
     p = subprocess.run(cmd, text=True)
     if p.returncode != 0:
         raise SystemExit(p.returncode)
@@ -28,16 +28,16 @@ def cmd_clean(args: argparse.Namespace) -> None:
     market = args.market.upper()
 
     if market == "US":
-        # US cleaner expects: python data_preperation_us.py <input_csv>
-        cmd = ["python", "data-preperation_us.py"]
+        # US cleaner expects: python data_preparation_us.py <input_csv>
+        cmd = ["python", "data_preparation_us.py"]
         if args.input:
             cmd += [args.input]
         _run(cmd)
         return
 
     if market == "DE":
-        # DE cleaner expects: python data_preperation_de.py <input_csv>
-        cmd = ["python", "data-preperation_de.py"]
+        # DE cleaner expects: python data_preparation_de.py <input_csv>
+        cmd = ["python", "data_preparation_de.py"]
         if args.input:
             cmd += [args.input]
         _run(cmd)

@@ -11,9 +11,9 @@ import pytest
 # ------------------------------------------------------------
 
 PROJECT_ROOT = Path(__file__).resolve().parent
-SCRIPT_PATH = PROJECT_ROOT.parent / "src" / "data_processing" / "data_preperation_us.py"
+SCRIPT_PATH = PROJECT_ROOT.parent / "src" / "data_processing" / "data_preparation_us.py"
 
-spec = importlib.util.spec_from_file_location("data_preperation_us", SCRIPT_PATH)
+spec = importlib.util.spec_from_file_location("data_preparation_us", SCRIPT_PATH)
 prep_us = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(prep_us)
 
