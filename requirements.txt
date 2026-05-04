@@ -12,6 +12,12 @@ shap>=0.44.0
 # Database & Environment
 supabase>=2.3.0
 python-dotenv>=1.0.0
+SQLAlchemy>=2.0.0
+psycopg2-binary>=2.9.0
+
+# API & Geolocation
+requests>=2.31.0
+geopy>=2.4.0
 
 # LLM Integration
 groq>=0.4.0
