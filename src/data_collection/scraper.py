@@ -22,7 +22,9 @@ def scrape_mobile_de_details(max_pages=5):
     )
     # Hier den Dateinamen anpassen.
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    filename = os.path.join(BASE_DIR, "data", "raw", "mobile_de_erweitert_Sklasse.csv")
+    output_dir = os.path.join(BASE_DIR, "data", "raw")
+    os.makedirs(output_dir, exist_ok=True)
+    filename = os.path.join(output_dir, "mobile_de_erweitert_Sklasse.csv")
     fieldnames = [
         "Titel", "Preis", "Kilometerstand", "Erstzulassung",
         "PS", "Getriebe", "Kraftstoff", "Fahrzeughalter",

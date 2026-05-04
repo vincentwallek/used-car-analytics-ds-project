@@ -88,7 +88,9 @@ for i, row in df.iterrows():   # ❗ erst testen!
 
 result_df = pd.DataFrame(results)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-output_path = os.path.join(BASE_DIR, "data", "processed", "llm_results2.csv")
+output_dir = os.path.join(BASE_DIR, "data", "processed")
+os.makedirs(output_dir, exist_ok=True)
+output_path = os.path.join(output_dir, "llm_results2.csv")
 result_df.to_csv(output_path, index=False)
 
 import json

@@ -198,7 +198,9 @@ def process_ai_features(raw_data):
 
 def save_local(df):
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    filename = os.path.join(BASE_DIR, "data", "processed", f"listing_features_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv")
+    output_dir = os.path.join(BASE_DIR, "data", "processed")
+    os.makedirs(output_dir, exist_ok=True)
+    filename = os.path.join(output_dir, f"listing_features_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv")
     df.to_csv(filename, index=False)
     print(f"Saved locally: {filename}")
 

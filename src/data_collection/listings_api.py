@@ -13,7 +13,9 @@ MAX_PAGES = 200
 
 BASE_URL = "https://api.auto.dev/listings"
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-OUTPUT_FILE = os.path.join(BASE_DIR, 'data', 'raw', 'ford_f_series_mit_ownerCount.csv')
+OUTPUT_DIR = os.path.join(BASE_DIR, 'data', 'raw')
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+OUTPUT_FILE = os.path.join(OUTPUT_DIR, 'ford_f_series_mit_ownerCount.csv')
 
 headers = {
     'x-api-key': API_KEY
