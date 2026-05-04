@@ -253,12 +253,14 @@ if __name__ == "__main__":
         explain_model(model, X_train)
 
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        models_dir = os.path.join(BASE_DIR, "models")
+        os.makedirs(models_dir, exist_ok=True)
         
         # Modelle mit "_us" Suffix speichern, um deutsche Dateien nicht zu überschreiben
-        with open(os.path.join(BASE_DIR, "models", "car_price_xgboost_us.pkl"), "wb") as f:
+        with open(os.path.join(models_dir, "car_price_xgboost_us.pkl"), "wb") as f:
             pickle.dump(model, f)
 
-        with open(os.path.join(BASE_DIR, "models", "categorical_encoder_us.pkl"), "wb") as f:
+        with open(os.path.join(models_dir, "categorical_encoder_us.pkl"), "wb") as f:
             pickle.dump(encoder, f)
 
         categorical_cols = [
@@ -267,7 +269,7 @@ if __name__ == "__main__":
         ]
         numeric_cols = [c for c in df.columns if c not in categorical_cols and c != "price"]
 
-        with open(os.path.join(BASE_DIR, "models", "numeric_columns_us.pkl"), "wb") as f:
+        with open(os.path.join(models_dir, "numeric_columns_us.pkl"), "wb") as f:
             pickle.dump(numeric_cols, f)
 
         print("✅ US-Pipeline erfolgreich beendet. Das BESTE Modell wurde als '_us.pkl' gespeichert!")
