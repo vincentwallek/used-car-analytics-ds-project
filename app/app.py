@@ -13,7 +13,7 @@ from helpers import (
     img_to_base64, get_encoder_categories, generate_recommendations,
     DE_BINARY_LABELS, DE_CONDITION_KEYS, DE_EQUIP_KEYS,
     get_market_data, predict_price, run_ml_prediction,
-    _fmt, _translate_shap, _collect_inputs, _b
+    _fmt, _translate_shap, _collect_inputs, _b, _SHAP_PREFIX
 )
 
 # ==========================================
