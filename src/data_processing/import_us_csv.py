@@ -135,7 +135,7 @@ def main():
         batch = us_rows[i:i + batch_size]
         supabase.table("listing_us").insert(batch).execute()
 
-    print(f"US import done: {len(df)} rows")
+    print(f"US import finished: {len(df)} rows processed.")
     print(f"dataset_id: {dataset_id}")
 
 

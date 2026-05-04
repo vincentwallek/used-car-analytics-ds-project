@@ -87,14 +87,14 @@ def load_data():
             rows.append(combined)
 
     df = pd.DataFrame(rows)
-    print(f"Erfolgreich {len(df)} Datensätze geladen.")
+    print(f"Successfully loaded {len(df)} records.")
     return df
 
 # =========================
 # 2. DATA PREPROCESSING
 # =========================
 def preprocess_data(df):
-    print("Bereite Daten vor...")
+    print("Preparing data...")
     # Ausreißer ohne Preis, Alter oder Kilometer entfernen
     df = df.dropna(subset=["price", "mileage", "car_age"])
 
@@ -127,7 +127,7 @@ def preprocess_data(df):
 # 3. MODEL TRAINING & HYPERPARAMETER TUNING
 # =========================
 def train_model(X, y):
-    print("Suche automatisch nach der besten Baumtiefe und Parameter-Kombination...")
+    print("Automatically searching for the best tree depth and parameter combination...")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Basis-Modell definieren
@@ -152,7 +152,7 @@ def train_model(X, y):
     grid_search.fit(X_train, y_train)
     best_model = grid_search.best_estimator_
 
-    print(f"\n--- Bester gefundener Parameter-Mix ---")
+    print(f"\\n--- Best parameter mix found ---")
     print(grid_search.best_params_)
 
     # Model Evaluation des Gewinner-Modells
@@ -160,7 +160,7 @@ def train_model(X, y):
     mae = mean_absolute_error(y_test, predictions)
     r2 = r2_score(y_test, predictions)
 
-    print(f"\n--- Modellauswertung (Bestes Modell) ---")
+    print(f"\\n--- Model Evaluation (Best Model) ---")
     print(f"R² Score: {r2:.2f}")
     print(f"Mean Absolute Error (MAE): {mae:.2f} €\n")
 
@@ -170,15 +170,15 @@ def train_model(X, y):
 # 4. FEATURE IMPACT ANALYSIS (SHAP)
 # =========================
 def explain_model(model, X_train):
-    print("Berechne beispielhaft Feature-Impact mit SHAP...")
+    print("Calculating example feature impact with SHAP...")
     explainer = shap.TreeExplainer(model)
 
     sample_car = X_train.iloc[[0]]
     shap_values = explainer(sample_car)
 
     basis_preis = shap_values.base_values[0]
-    print(f"Basis-Preis: {basis_preis:.2f} €")
-    print("Top 15 Einflussfaktoren für dieses spezifische Auto:")
+    print(f"Base Price: €{basis_preis:.2f}")
+    print("Top 15 impact factors for this specific car:")
 
     impacts = pd.DataFrame({
         'Feature': sample_car.columns,
@@ -219,6 +219,6 @@ if __name__ == "__main__":
         with open(os.path.join(models_dir, "numeric_columns.pkl"), "wb") as f:
             pickle.dump(numeric_cols, f)
 
-        print("✅ Pipeline erfolgreich beendet. Das BESTE Modell wurde gespeichert!")
+        print("✅ Pipeline completed successfully. The BEST model was saved!")
     else:
-        print("Keine Daten für das Training gefunden.")
+        print("No data found for training.")

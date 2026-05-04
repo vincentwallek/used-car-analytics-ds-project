@@ -28,7 +28,7 @@ WHERE d.beschreibung IS NOT NULL
 """
 
 df = pd.read_sql(query, engine)
-print(f"Geladene Zeilen: {len(df)}")
+print(f"Loaded rows: {len(df)}")
 
 # =========================
 # LLM FUNCTION

@@ -11,7 +11,7 @@ import os
 
 
 def scrape_mobile_de_details(max_pages=5):
-    print("Starte getarnten Browser...")
+    print("Starting cloaked browser...")
     driver = Driver(uc=True, incognito=True)
 
     # Hier URL anpassen, welche Seite gescrapt werden soll.
@@ -43,12 +43,12 @@ def scrape_mobile_de_details(max_pages=5):
         # --- 1. LINKS ÜBER MEHRERE SEITEN SAMMELN ---
         for page in range(1, max_pages + 1):
             current_search_url = f"{base_search_url}&pageNumber={page}"
-            print(f"\n--- Lade Übersichtsseite {page} ---")
+            print(f"\\n--- Loading overview page {page} ---")
 
             driver.uc_open_with_reconnect(current_search_url, reconnect_time=5)
 
             if page == 1:
-                print("Warte 15 Sekunden auf der ersten Seite (evtl. Captcha/Cookies)...")
+                print("Waiting 15 seconds on the first page (for potential captchas/cookies)...")
                 time.sleep(15)
             else:
                 time.sleep(random.uniform(5, 8))
@@ -65,15 +65,15 @@ def scrape_mobile_de_details(max_pages=5):
                     href = "https://suchen.mobile.de" + href
                 # URL bereinigen, um Duplikate zu vermeiden
                 clean_href = (
-                    href.split("-)[0] + "- + href.split("-)[1].split("&")[0]
-                    if "- in href
+                    href.split("?")[0] + "?" + href.split("?")[1].split("&")[0]
+                    if "?" in href
                     else href
                 )
                 if clean_href not in all_car_links:
                     page_links.append(clean_href)
 
             if not page_links:
-                print("Keine weiteren Links gefunden. Beende das Sammeln der Links.")
+                print("No further links found. Stopping link collection.")
                 break
 
             all_car_links.extend(page_links)
@@ -84,12 +84,12 @@ def scrape_mobile_de_details(max_pages=5):
 
         # LIMIT FÜR DEN TESTLAUF (entfernen, wenn alle Links gescrapt werden sollen)
         all_car_links = all_car_links[:200]
-        print(f"\nBesuche nun {len(all_car_links)} Autos im Detail...")
+        print(f"\\nVisiting {len(all_car_links)} car detail pages...")
 
         # --- 2. DETAILSEITEN BESUCHEN & DIREKT SPEICHERN ---
         for index, link in enumerate(all_car_links, 1):
             try:
-                print(f"[{index}/{len(all_car_links)}] Öffne Auto...")
+                print(f"[{index}/{len(all_car_links)}] Opening listing...")
                 driver.uc_open_with_reconnect(link, reconnect_time=4)
                 time.sleep(random.uniform(4.0, 6.0))
                 driver.execute_script("window.scrollBy(0, 800);")
@@ -278,17 +278,17 @@ def scrape_mobile_de_details(max_pages=5):
                     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                     writer.writerow(car_data)
 
-                print(f"   -> Erfolg & Gespeichert: {title[:40]}... | {price} | Standort: {standort}")
+                print(f"   -> Success & Saved: {title[:40]}... | {price} | Location: {standort}")
 
             except Exception as e:
-                print(f"   -> Fehler bei diesem Auto übersprungen: {e}")
+                print(f"   -> Error with this listing, skipping: {e}")
                 continue
 
     except Exception as e:
-        print(f"Ein genereller Fehler ist aufgetreten: {e}")
+        print(f"A general error occurred: {e}")
     finally:
         driver.quit()
-        print(f"\nScraping beendet! Alle gesammelten Daten sind in '{filename}'.")
+        print(f"\\nScraping completed! All collected data is saved in '{filename}'.")
 
 
 # --- Execution ---

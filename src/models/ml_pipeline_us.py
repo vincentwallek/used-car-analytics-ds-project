@@ -25,7 +25,7 @@ SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def load_data():
-    print("Lade US-Daten aus Supabase (in Batches, um API-Limits zu umgehen)...")
+    print("Loading US data from Supabase (in batches to avoid API limits)...")
 
     all_rows = []
     limit = 1000  # Load data in chunks of 1000
@@ -57,7 +57,7 @@ def load_data():
 
         offset += limit
 
-    print(f"-> {len(all_rows)} Roh-Datensätze komplett heruntergeladen. Verarbeite...")
+    print(f"-> {len(all_rows)} raw records fully downloaded. Processing...")
 
     rows = []
     for row in all_rows:
@@ -119,14 +119,14 @@ def load_data():
             rows.append(combined)
 
     df = pd.DataFrame(rows)
-    print(f"Erfolgreich {len(df)} US-Datensätze mit Preis für das Training vorbereitet.")
+    print(f"Successfully prepared {len(df)} US records with price for training.")
     return df
 
 # =========================
 # 2. DATA PREPROCESSING
 # =========================
 def preprocess_data(df):
-    print("\nBereite US-Daten vor...")
+    print("\\nPreparing US data...")
     count_start = len(df)
 
     # =========================================================================
@@ -136,7 +136,7 @@ def preprocess_data(df):
     df = df[~df["brand"].str.contains("mercedes", case=False, na=False)]
 
     count_no_mercedes = len(df)
-    print(f"ℹ️ Info: {count_start - count_no_mercedes} Mercedes-Fahrzeuge wurden temporär aussortiert.")
+    print(f"ℹ️ Info: {count_start - count_no_mercedes} Mercedes vehicles were temporarily filtered out.")
     # =========================================================================
     # ⚠️ TEMPORARY FILTER: END
     # =========================================================================
@@ -145,8 +145,8 @@ def preprocess_data(df):
     df = df.dropna(subset=["price", "mileage", "car_age"])
 
     count_after_na = len(df)
-    print(f"ℹ️ Info: {count_no_mercedes - count_after_na} Autos wurden gelöscht, weil Preis, Kilometer oder Alter fehlen.")
-    print(f"-> Es verbleiben {count_after_na} saubere Autos für das Training.\n")
+    print(f"ℹ️ Info: {count_no_mercedes - count_after_na} cars were removed due to missing price, mileage, or age.")
+    print(f"-> {count_after_na} clean cars remain for training.\\n")
 
     # Fill numerical missing values with median
     numeric_fills = ["accident_count", "owner_count", "cylinders", "doors", "seats"]
@@ -181,7 +181,7 @@ def preprocess_data(df):
 # 3. MODEL TRAINING & HYPERPARAMETER TUNING
 # =========================
 def train_model(X, y):
-    print("Suche automatisch nach der besten Baumtiefe und Parameter-Kombination...")
+    print("Automatically searching for the best tree depth and parameter combination...")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     base_model = xgb.XGBRegressor(random_state=42, n_jobs=-1)
@@ -203,7 +203,7 @@ def train_model(X, y):
     grid_search.fit(X_train, y_train)
     best_model = grid_search.best_estimator_
 
-    print(f"\n--- Bester gefundener Parameter-Mix (US) ---")
+    print(f"\\n--- Best parameter mix found (US) ---")
     print(grid_search.best_params_)
 
     # Model Evaluation
@@ -211,7 +211,7 @@ def train_model(X, y):
     mae = mean_absolute_error(y_test, predictions)
     r2 = r2_score(y_test, predictions)
 
-    print(f"\n--- Modellauswertung US (Bestes Modell) ---")
+    print(f"\\n--- Model Evaluation US (Best Model) ---")
     print(f"R² Score: {r2:.2f}")
     print(f"Mean Absolute Error (MAE): {mae:.2f} $\n")
 
@@ -221,15 +221,15 @@ def train_model(X, y):
 # 4. FEATURE IMPACT ANALYSIS (SHAP)
 # =========================
 def explain_model(model, X_train):
-    print("Berechne beispielhaft Feature-Impact mit SHAP...")
+    print("Calculating example feature impact with SHAP...")
     explainer = shap.TreeExplainer(model)
 
     sample_car = X_train.iloc[[0]]
     shap_values = explainer(sample_car)
 
     basis_preis = shap_values.base_values[0]
-    print(f"Basis-Preis: {basis_preis:.2f} $")
-    print("Top 15 Einflussfaktoren für dieses spezifische US-Auto:")
+    print(f"Base Price: ${basis_preis:.2f}")
+    print("Top 15 impact factors for this specific US car:")
 
     impacts = pd.DataFrame({
         'Feature': sample_car.columns,
@@ -272,6 +272,6 @@ if __name__ == "__main__":
         with open(os.path.join(models_dir, "numeric_columns_us.pkl"), "wb") as f:
             pickle.dump(numeric_cols, f)
 
-        print("✅ US-Pipeline erfolgreich beendet. Das BESTE Modell wurde als '_us.pkl' gespeichert!")
+        print("✅ US Pipeline completed successfully. The BEST model was saved as '_us.pkl'!")
     else:
-        print("Keine US-Daten für das Training gefunden.")
+        print("No US data found for training.")
