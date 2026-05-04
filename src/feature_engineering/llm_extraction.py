@@ -1,7 +1,7 @@
 import pandas as pd
 import requests
 from sqlalchemy import create_engine
-
+import os
 
 # =========================
 # DB CONNECTION
@@ -87,7 +87,9 @@ for i, row in df.iterrows():   # ❗ erst testen!
 
 
 result_df = pd.DataFrame(results)
-result_df.to_csv("llm_results2.csv", index=False)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+output_path = os.path.join(BASE_DIR, "data", "processed", "llm_results2.csv")
+result_df.to_csv(output_path, index=False)
 
 import json
 

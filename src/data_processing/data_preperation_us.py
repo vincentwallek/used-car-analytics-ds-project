@@ -224,7 +224,8 @@ def main():
     df_clean = clean_us_data(df)
     print(f"Rows after cleaning:  {len(df_clean)}")
 
-    output_path = f"cleaned_{os.path.basename(input_path)}"
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    output_path = os.path.join(BASE_DIR, "data", "processed", f"cleaned_{os.path.basename(input_path)}")
     df_clean.to_csv(output_path, index=False)
     print(f"Saved cleaned data to: {output_path}")
 

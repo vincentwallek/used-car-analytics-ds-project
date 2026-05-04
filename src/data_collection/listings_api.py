@@ -2,6 +2,7 @@ import requests
 import csv
 import time
 import json
+import os
 
 # ============================ KONFIGURATION ===============================
 API_KEY = "sk_ad_ZF_y6274NrUEe4T97RjrYTaX"
@@ -11,7 +12,8 @@ MAX_PAGES = 200
 # ==========================================================================
 
 BASE_URL = "https://api.auto.dev/listings"
-OUTPUT_FILE = 'ford_f_series_mit_ownerCount.csv'
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+OUTPUT_FILE = os.path.join(BASE_DIR, 'data', 'raw', 'ford_f_series_mit_ownerCount.csv')
 
 headers = {
     'x-api-key': API_KEY

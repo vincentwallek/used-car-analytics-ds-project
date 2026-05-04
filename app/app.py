@@ -425,18 +425,19 @@ geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
 def load_models():
     models = {}
     base_dir = os.path.dirname(os.path.abspath(__file__))
+    models_dir = os.path.join(os.path.dirname(base_dir), "models")
     try:
-        with open(os.path.join(base_dir, "car_price_xgboost.pkl"), "rb") as f:
+        with open(os.path.join(models_dir, "car_price_xgboost.pkl"), "rb") as f:
             models["de_model"] = pickle.load(f)
-        with open(os.path.join(base_dir, "categorical_encoder.pkl"), "rb") as f:
+        with open(os.path.join(models_dir, "categorical_encoder.pkl"), "rb") as f:
             models["de_encoder"] = pickle.load(f)
-        with open(os.path.join(base_dir, "numeric_columns.pkl"), "rb") as f:
+        with open(os.path.join(models_dir, "numeric_columns.pkl"), "rb") as f:
             models["de_num_cols"] = pickle.load(f)
-        with open(os.path.join(base_dir, "car_price_xgboost_us.pkl"), "rb") as f:
+        with open(os.path.join(models_dir, "car_price_xgboost_us.pkl"), "rb") as f:
             models["us_model"] = pickle.load(f)
-        with open(os.path.join(base_dir, "categorical_encoder_us.pkl"), "rb") as f:
+        with open(os.path.join(models_dir, "categorical_encoder_us.pkl"), "rb") as f:
             models["us_encoder"] = pickle.load(f)
-        with open(os.path.join(base_dir, "numeric_columns_us.pkl"), "rb") as f:
+        with open(os.path.join(models_dir, "numeric_columns_us.pkl"), "rb") as f:
             models["us_num_cols"] = pickle.load(f)
         return models
     except:
@@ -782,12 +783,13 @@ def view_header():
             
         # Large centered logo ABOVE the divider line
         base_path = os.path.dirname(os.path.abspath(__file__))
+        assets_path = os.path.join(base_path, "assets")
         if st.session_state.theme == "dark":
-            logo_path = os.path.join(base_path, "dark_logo.png")
+            logo_path = os.path.join(assets_path, "dark_logo.png")
         else:
-            logo_path = os.path.join(base_path, "light_logo.png")
+            logo_path = os.path.join(assets_path, "light_logo.png")
         if not os.path.exists(logo_path):
-            logo_path = os.path.join(base_path, "logo.png")
+            logo_path = os.path.join(assets_path, "logo.png")
             
         if os.path.exists(logo_path):
             st.markdown(
@@ -802,12 +804,13 @@ def view_header():
         col_logo, col_spacer, col_nav, col_theme = st.columns([2.5, 4.5, 2, 1])
         with col_logo:
             base_path = os.path.dirname(os.path.abspath(__file__))
+            assets_path = os.path.join(base_path, "assets")
             if st.session_state.theme == "dark":
-                logo_path = os.path.join(base_path, "dark_logo.png")
+                logo_path = os.path.join(assets_path, "dark_logo.png")
             else:
-                logo_path = os.path.join(base_path, "light_logo.png")
+                logo_path = os.path.join(assets_path, "light_logo.png")
             if not os.path.exists(logo_path):
-                logo_path = os.path.join(base_path, "logo.png")
+                logo_path = os.path.join(assets_path, "logo.png")
                 
             if os.path.exists(logo_path):
                 st.markdown(

@@ -21,7 +21,8 @@ def scrape_mobile_de_details(max_pages=5):
         "&refId=c0d9ecaa-2e9d-52e5-6f6c-f7ea6ddbf3b2&s=Car&sb=rel&st=DEALER&vc=Car"
     )
     # Hier den Dateinamen anpassen.
-    filename = "mobile_de_erweitert_Sklasse.csv"
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    filename = os.path.join(BASE_DIR, "data", "raw", "mobile_de_erweitert_Sklasse.csv")
     fieldnames = [
         "Titel", "Preis", "Kilometerstand", "Erstzulassung",
         "PS", "Getriebe", "Kraftstoff", "Fahrzeughalter",
