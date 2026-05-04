@@ -15,7 +15,7 @@ SCRIPT_PATH = PROJECT_ROOT.parent / "app" / "helpers.py"
 
 
 class AttrDict(dict):
-    """Dict mit Attributzugriff, passend für st.session_state.x."""
+    """Dict with attribute access, compatible with st.session_state."""
     def __getattr__(self, name):
         try:
             return self[name]

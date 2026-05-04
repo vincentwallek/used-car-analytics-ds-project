@@ -1,10 +1,10 @@
 """
-test_ml_pipelines.py
-Vollständige Tests für ml_pipeline_de.py und ml_pipeline_us.py
+Test Suite: ML Pipelines (ml_pipeline_de.py and ml_pipeline_us.py)
+Comprehensive validation of data loading, preprocessing, model training,
+and artifact serialization.
 
-Ausführen:
+Execution:
     pytest test_ml_pipelines.py -v
-    pytest test_ml_pipelines.py -v --tb=short   # kürzere Fehlerausgabe
 """
 
 import sys

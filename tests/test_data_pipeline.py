@@ -8,10 +8,7 @@ import pytest
 
 
 # ------------------------------------------------------------
-# data-pipeline.py importieren
-# Wichtig: Weil der Dateiname einen Bindestrich hat, kann man
-# nicht einfach "import data-pipeline" schreiben.
-# Deshalb wird die Datei über importlib geladen.
+# Module Import Setup
 # ------------------------------------------------------------
 
 PROJECT_ROOT = Path(__file__).resolve().parent

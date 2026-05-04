@@ -16,7 +16,7 @@ import shap
 import pickle
 
 # =========================
-# 1. DATEN LADEN
+# 1. DATA LOADING
 # =========================
 load_dotenv()
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
@@ -28,7 +28,7 @@ def load_data():
     print("Lade US-Daten aus Supabase (in Batches, um API-Limits zu umgehen)...")
 
     all_rows = []
-    limit = 1000  # Wir laden in 1000er Schritten
+    limit = 1000  # Load data in chunks of 1000
     offset = 0
 
     while True:
@@ -47,11 +47,11 @@ def load_data():
 
         data = response.data
         if not data:
-            break  # Keine Daten mehr gefunden -> Schleife beenden
+            break  # No more data -> break loop
 
         all_rows.extend(data)
 
-        # Wenn weniger Daten zurückkamen als das Limit, sind wir am Ende
+        # If returned data is less than limit, we reached the end
         if len(data) < limit:
             break
 
@@ -70,11 +70,11 @@ def load_data():
             if len(listings_data) == 0: continue
             listings_data = listings_data[0]
 
-        # Helfer für saubere Strings
+        # Helper for string normalization
         def safe_str(val):
             return str(val).lower().strip() if pd.notnull(val) and val != "" else "unbekannt"
 
-        # Helfer für Booleans (Wandelt True/False in 1/0 um)
+        # Helper for boolean conversion
         def safe_bool(val):
             return 1 if val is True else 0
 
@@ -85,7 +85,7 @@ def load_data():
             "brand": safe_str(listings_data.get("brand")),
             "model": safe_str(listings_data.get("model")),
 
-            # US-Spezifische numerische Daten
+            # US-Specific numerical data
             "car_age": row.get("car_age"),
             "accident_count": row.get("accident_count"),
             "owner_count": row.get("owner_count"),
@@ -93,7 +93,7 @@ def load_data():
             "doors": row.get("doors"),
             "seats": row.get("seats"),
 
-            # US-Spezifische kategoriale Daten (Text)
+            # US-Specific categorical data (text)
             "trim": safe_str(row.get("trim")),
             "drivetrain": safe_str(row.get("drivetrain")),
             "fuel": safe_str(row.get("fuel")),
@@ -104,7 +104,7 @@ def load_data():
             "interior_color": safe_str(row.get("interior_color")),
             "usage_type": safe_str(row.get("usage_type")),
 
-            # US-Spezifische Boolesche Daten (Wahr/Falsch zu 1/0)
+            # US-Specific boolean data (True/False to 1/0)
             "one_owner": safe_bool(row.get("one_owner")),
             "has_accidents": safe_bool(row.get("has_accidents")),
             "is_used": safe_bool(row.get("is_used")),
@@ -114,7 +114,7 @@ def load_data():
             "personal_use": safe_bool(row.get("personal_use"))
         }
 
-        # Nur aufnehmen, wenn ein Preis vorhanden ist
+        # Include only if price is available
         if pd.notna(combined["price"]):
             rows.append(combined)
 
@@ -123,42 +123,42 @@ def load_data():
     return df
 
 # =========================
-# 2. PREPROCESSING
+# 2. DATA PREPROCESSING
 # =========================
 def preprocess_data(df):
     print("\nBereite US-Daten vor...")
     count_start = len(df)
 
     # =========================================================================
-    # ⚠️ TEMPORÄRER FILTER: START (Diese Zeilen später einfach löschen)
+    # ⚠️ TEMPORARY FILTER: START (Remove these lines later)
     # =========================================================================
-    # Wirf alle Autos raus, die "mercedes" im Markennamen enthalten.
+    # Filter out Mercedes-Benz vehicles.
     df = df[~df["brand"].str.contains("mercedes", case=False, na=False)]
 
     count_no_mercedes = len(df)
     print(f"ℹ️ Info: {count_start - count_no_mercedes} Mercedes-Fahrzeuge wurden temporär aussortiert.")
     # =========================================================================
-    # ⚠️ TEMPORÄRER FILTER: ENDE
+    # ⚠️ TEMPORARY FILTER: END
     # =========================================================================
 
-    # Harte Ausreißer ohne Alter oder Kilometer entfernen
+    # Remove hard outliers (missing age or mileage)
     df = df.dropna(subset=["price", "mileage", "car_age"])
 
     count_after_na = len(df)
     print(f"ℹ️ Info: {count_no_mercedes - count_after_na} Autos wurden gelöscht, weil Preis, Kilometer oder Alter fehlen.")
     print(f"-> Es verbleiben {count_after_na} saubere Autos für das Training.\n")
 
-    # Numerische Lücken mit dem Median füllen
+    # Fill numerical missing values with median
     numeric_fills = ["accident_count", "owner_count", "cylinders", "doors", "seats"]
     for col in numeric_fills:
         if col in df.columns:
             df[col] = df[col].fillna(df[col].median())
 
-    # X und y trennen
+    # Separate features (X) and target (y)
     X = df.drop(columns=["price"])
     y = df["price"]
 
-    # Kategorien encodieren
+    # Encode categorical variables
     categorical_cols = [
         "brand", "model", "trim", "drivetrain", "fuel", "transmission",
         "body_style", "engine", "exterior_color", "interior_color", "usage_type"
@@ -178,7 +178,7 @@ def preprocess_data(df):
     return X_final, y, encoder
 
 # =========================
-# 3. MODELL TRAINING (MIT GRID SEARCH)
+# 3. MODEL TRAINING & HYPERPARAMETER TUNING
 # =========================
 def train_model(X, y):
     print("Suche automatisch nach der besten Baumtiefe und Parameter-Kombination...")
@@ -187,7 +187,7 @@ def train_model(X, y):
     base_model = xgb.XGBRegressor(random_state=42, n_jobs=-1)
 
     param_grid = {
-        'max_depth': [4, 6, 8, 10],           # Mehr Auswahl, da wir mehr US-Features haben
+        'max_depth': [4, 6, 8, 10],           # Expanded selection due to larger feature space
         'learning_rate': [0.05, 0.1],
         'n_estimators': [500, 1000]
     }
@@ -206,7 +206,7 @@ def train_model(X, y):
     print(f"\n--- Bester gefundener Parameter-Mix (US) ---")
     print(grid_search.best_params_)
 
-    # Evaluation
+    # Model Evaluation
     predictions = best_model.predict(X_test)
     mae = mean_absolute_error(y_test, predictions)
     r2 = r2_score(y_test, predictions)
@@ -218,7 +218,7 @@ def train_model(X, y):
     return best_model, X_train
 
 # =========================
-# 4. FEATURE IMPACT (SHAP)
+# 4. FEATURE IMPACT ANALYSIS (SHAP)
 # =========================
 def explain_model(model, X_train):
     print("Berechne beispielhaft Feature-Impact mit SHAP...")
@@ -241,7 +241,7 @@ def explain_model(model, X_train):
     print("\n")
 
 # =========================
-# MAIN
+# MAIN EXECUTION
 # =========================
 if __name__ == "__main__":
     df = load_data()
@@ -256,7 +256,7 @@ if __name__ == "__main__":
         models_dir = os.path.join(BASE_DIR, "models")
         os.makedirs(models_dir, exist_ok=True)
         
-        # Modelle mit "_us" Suffix speichern, um deutsche Dateien nicht zu überschreiben
+        # Save models with market-specific suffix
         with open(os.path.join(models_dir, "car_price_xgboost_us.pkl"), "wb") as f:
             pickle.dump(model, f)
 

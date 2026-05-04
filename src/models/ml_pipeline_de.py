@@ -1,7 +1,7 @@
 """
-02_ml_pipeline_de.py
-Training des XGBoost Preisvorhersage-Modells
-(Final: Korrektes Daten-Schema + Automatisches Hyperparameter-Tuning)
+ml_pipeline_de.py
+Training the XGBoost Price Prediction Model
+(Final: Correct Data Schema + Automatic Hyperparameter Tuning)
 """
 
 import os
@@ -16,7 +16,7 @@ import shap
 import pickle
 
 # =========================
-# 1. DATEN LADEN
+# 1. DATA LOADING
 # =========================
 load_dotenv()
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
@@ -25,9 +25,9 @@ SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def load_data():
-    print("Lade Daten aus Supabase...")
+    print("Loading data from Supabase...")
 
-    # PERFEKTER JOIN NACH DEINEM SCHEMA:
+    # Database join according to schema:
     # car_age, power_ps, owners, transmission, fuel aus listing_de
     # price, mileage, brand, model aus listings
     # Alle Features aus listing_features
@@ -39,7 +39,7 @@ def load_data():
 
     rows = []
     for row in response.data:
-        # --- Basisdaten aus der verknüpften 'listings' Tabelle entpacken ---
+        # --- Extract base data from linked listings table ---
         listings_data = row.get("listings")
         if not listings_data:
             continue
@@ -48,7 +48,7 @@ def load_data():
             if len(listings_data) == 0: continue
             listings_data = listings_data[0]
 
-        # --- ML-Features aus 'listing_features' entpacken ---
+        # --- Extract ML features from listing_features ---
         features = row.get("listing_features")
         if not features:
             continue
@@ -82,7 +82,7 @@ def load_data():
         # Unnötige IDs entfernen
         combined.pop("listing_id", None)
 
-        # Nur aufnehmen, wenn ein Preis vorhanden ist
+        # Include only if price is available
         if pd.notna(combined["price"]):
             rows.append(combined)
 
@@ -91,7 +91,7 @@ def load_data():
     return df
 
 # =========================
-# 2. PREPROCESSING
+# 2. DATA PREPROCESSING
 # =========================
 def preprocess_data(df):
     print("Bereite Daten vor...")
@@ -104,11 +104,11 @@ def preprocess_data(df):
     if "owners" in df.columns:
         df["owners"] = df["owners"].fillna(df["owners"].median())
 
-    # X und y trennen
+    # Separate features (X) and target (y)
     X = df.drop(columns=["price"])
     y = df["price"]
 
-    # --- Kategorien encodieren ---
+    # --- Encode categorical variables ---
     categorical_cols = ["brand", "model", "transmission", "fuel"]
     categorical_cols = [c for c in categorical_cols if c in X.columns]
     numeric_cols = [c for c in X.columns if c not in categorical_cols]
@@ -124,7 +124,7 @@ def preprocess_data(df):
     return X_final, y, encoder
 
 # =========================
-# 3. MODELL TRAINING (MIT GRID SEARCH)
+# 3. MODEL TRAINING & HYPERPARAMETER TUNING
 # =========================
 def train_model(X, y):
     print("Suche automatisch nach der besten Baumtiefe und Parameter-Kombination...")
@@ -155,7 +155,7 @@ def train_model(X, y):
     print(f"\n--- Bester gefundener Parameter-Mix ---")
     print(grid_search.best_params_)
 
-    # Evaluation des Gewinner-Modells
+    # Model Evaluation des Gewinner-Modells
     predictions = best_model.predict(X_test)
     mae = mean_absolute_error(y_test, predictions)
     r2 = r2_score(y_test, predictions)
@@ -167,7 +167,7 @@ def train_model(X, y):
     return best_model, X_train
 
 # =========================
-# 4. FEATURE IMPACT (SHAP)
+# 4. FEATURE IMPACT ANALYSIS (SHAP)
 # =========================
 def explain_model(model, X_train):
     print("Berechne beispielhaft Feature-Impact mit SHAP...")
@@ -190,7 +190,7 @@ def explain_model(model, X_train):
     print("\n")
 
 # =========================
-# MAIN
+# MAIN EXECUTION
 # =========================
 if __name__ == "__main__":
     df = load_data()

@@ -13,9 +13,10 @@ SCRIPT_PATH = PROJECT_ROOT.parent / "src" / "feature_engineering" / "llm_extract
 
 def import_llm_module(monkeypatch, tmp_path, fake_df=None, fake_post=None):
     """
-    Lädt llm_extraction.py isoliert.
-    Wichtig: Die Datei führt beim Import direkt DB- und LLM-Code aus.
-    Deshalb werden sqlalchemy, pandas.read_sql und requests.post vor dem Import gemockt.
+    Loads llm_extraction.py in an isolated environment.
+    Note: The module executes database and LLM queries upon import.
+    Therefore, dependencies like sqlalchemy, pandas.read_sql, and requests.post 
+    must be mocked prior to importing.
     """
 
     monkeypatch.chdir(tmp_path)

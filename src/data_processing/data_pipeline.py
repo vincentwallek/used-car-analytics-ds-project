@@ -28,7 +28,7 @@ def cmd_clean(args: argparse.Namespace) -> None:
     market = args.market.upper()
 
     if market == "US":
-        # US cleaner expects: python data-preperation_us.py <input_csv>
+        # US cleaner expects: python data_preperation_us.py <input_csv>
         cmd = ["python", "data-preperation_us.py"]
         if args.input:
             cmd += [args.input]
@@ -36,7 +36,7 @@ def cmd_clean(args: argparse.Namespace) -> None:
         return
 
     if market == "DE":
-        # DE cleaner expects: python data-preperation_de.py <input_csv>
+        # DE cleaner expects: python data_preperation_de.py <input_csv>
         cmd = ["python", "data-preperation_de.py"]
         if args.input:
             cmd += [args.input]
@@ -77,7 +77,7 @@ def cmd_import(args: argparse.Namespace) -> None:
 
 
 def cmd_run(args: argparse.Namespace) -> None:
-    # 1) clean (runs your existing script)
+    # 1) clean (runs existing preprocessing script)
     clean_args = argparse.Namespace(market=args.market, input=args.input, output=args.output)
     cmd_clean(clean_args)
 

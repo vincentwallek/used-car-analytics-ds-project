@@ -1,4 +1,4 @@
-# Zuerst seleniumbase installieren (falls noch nicht vorhanden):
+# Install seleniumbase first (if not present):
 # pip install seleniumbase
 
 from seleniumbase import Driver
@@ -20,7 +20,7 @@ def scrape_mobile_de_details(max_pages=5):
         "&isSearchRequest=true&ms=17200%3B%3B16%3B&od=up&ref=srp"
         "&refId=c0d9ecaa-2e9d-52e5-6f6c-f7ea6ddbf3b2&s=Car&sb=rel&st=DEALER&vc=Car"
     )
-    # Hier den Dateinamen anpassen.
+    # Adjust the filename here.
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     output_dir = os.path.join(BASE_DIR, "data", "raw")
     os.makedirs(output_dir, exist_ok=True)
@@ -65,8 +65,8 @@ def scrape_mobile_de_details(max_pages=5):
                     href = "https://suchen.mobile.de" + href
                 # URL bereinigen, um Duplikate zu vermeiden
                 clean_href = (
-                    href.split("?")[0] + "?" + href.split("?")[1].split("&")[0]
-                    if "?" in href
+                    href.split("-)[0] + "- + href.split("-)[1].split("&")[0]
+                    if "- in href
                     else href
                 )
                 if clean_href not in all_car_links:
@@ -95,7 +95,7 @@ def scrape_mobile_de_details(max_pages=5):
                 driver.execute_script("window.scrollBy(0, 800);")
                 time.sleep(1.0)
 
-                # Klicke alle "Mehr anzeigen"-Buttons per JavaScript
+                # Click all "Show more" buttons via JavaScript
                 try:
                     mehr_anzeigen_buttons = driver.find_elements(
                         "xpath", "//*[contains(text(), 'Mehr anzeigen')]"
@@ -109,7 +109,7 @@ def scrape_mobile_de_details(max_pages=5):
                 soup = BeautifulSoup(driver.page_source, "html.parser")
                 page_text = soup.get_text(separator=" ", strip=True)
 
-                # -- TITEL (3-Stufen-Methode) --
+                # -- TITLE (3-Stage-Method) --
                 title = "N/A"
 
                 # Stufe 1: Meta-Tag
@@ -128,7 +128,7 @@ def scrape_mobile_de_details(max_pages=5):
                     if title_elem:
                         title = title_elem.get_text(separator=" ", strip=True)
 
-                # Stufe 3: Webseiten-Tab-Titel
+                # Stage 3: Website Tab Title
                 if title == "N/A" or not title:
                     page_title = soup.find("title")
                     if page_title:
@@ -154,7 +154,7 @@ def scrape_mobile_de_details(max_pages=5):
                 km_match = re.search(r"([\d\.]+)\s*km", page_text, re.IGNORECASE)
                 mileage = km_match.group(0) if km_match else "N/A"
 
-                # -- ERSTZULASSUNG --
+                # -- INITIAL REGISTRATION --
                 # Bugfix: Monat auf 01–12 beschränkt (vorher \d{2} akzeptierte z.B. 13)
                 ez_match = re.search(
                     r"(?:EZ|Erstzulassung)[\s:]*(0[1-9]|1[0-2])/\d{4}", page_text, re.IGNORECASE
@@ -178,7 +178,7 @@ def scrape_mobile_de_details(max_pages=5):
                     getriebe = "N/A"
 
                 # -- KRAFTSTOFF --
-                # Bugfix: \b funktioniert nicht bei Kraftstoffen mit Klammern wie "Autogas (LPG)".
+                # Bugfix:  does not work for fuels with parentheses like "Autogas (LPG)".
                 # Lösung: Wörter ohne Klammern nutzen \b, Einträge mit Klammern re.escape ohne \b.
                 kraftstoff = "N/A"
                 for k in ["Benzin", "Diesel", "Elektro", "Hybrid", "Autogas (LPG)", "Erdgas (CNG)"]:
@@ -209,7 +209,7 @@ def scrape_mobile_de_details(max_pages=5):
                     if fallback and fallback.group(2) not in ["Verfügbarkeit", "Kilometer", "Euro"]:
                         standort = f"{fallback.group(1)} {fallback.group(2)}"
 
-                # -- AUSSTATTUNG --
+                # -- EQUIPMENT --
                 ausstattung_liste = []
                 ausstattung_heading = soup.find(
                     lambda tag: tag.name in ["h2", "h3", "div"]
@@ -255,7 +255,7 @@ def scrape_mobile_de_details(max_pages=5):
                         ):
                             beschr_strings.append(text)
 
-                    clean_strings = list(dict.fromkeys(beschr_strings))  # Duplikate entfernen
+                    clean_strings = list(dict.fromkeys(beschr_strings))  # Remove duplicates
                     beschreibung_text = " | ".join(clean_strings) if clean_strings else "N/A"
 
                 # --- DATEN DIREKT IN CSV SPEICHERN ---
@@ -291,7 +291,7 @@ def scrape_mobile_de_details(max_pages=5):
         print(f"\nScraping beendet! Alle gesammelten Daten sind in '{filename}'.")
 
 
-# --- Ausführung ---
+# --- Execution ---
 # Du kannst die Anzahl der durchsuchten Seiten hier anpassen (z.B. max_pages=10)
 if __name__ == "__main__":
     scrape_mobile_de_details(max_pages=7)

@@ -1,6 +1,7 @@
 """
-Test-Suite für auto_dev_listings_api.py
-Testet: API-Aufruf-Mocking, Filterlogik, Flatten-Logik, CSV-Ausgabe, Fehlerbehandlung, Paginierung
+Test Suite: listings_api.py
+Validates API request mocking, data filtering, payload flattening, CSV generation,
+error handling, and pagination mechanisms.
 """
  
 import csv
@@ -17,11 +18,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src" / "data_co
 import requests
  
 # ---------------------------------------------------------------------------
-# Hilfsfunktionen – aus dem Skript extrahiert zum isolierten Testen
+# Helper Functions (Extracted from API script for Isolated Testing)
 # ---------------------------------------------------------------------------
  
 def flatten_dict(d, parent_key='', sep='_'):
-    """Identische Implementierung wie im Originalskript."""
+    """Identical implementation to the original script for isolated validation."""
     items = {}
     for k, v in d.items():
         new_key = parent_key + sep + k if parent_key else k

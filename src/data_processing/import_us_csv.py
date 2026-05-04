@@ -7,11 +7,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 SUPABASE_URL = os.environ["SUPABASE_URL"]
-SUPABASE_KEY = os.environ["SUPABASE_SERVICE_ROLE_KEY"]  # nur lokal/Backend!
+SUPABASE_KEY = os.environ["SUPABASE_SERVICE_ROLE_KEY"]  # Local/Backend use only!
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# Defaults (können jetzt per CLI überschrieben werden)
+# Defaults (can be overridden via CLI)
 DEFAULT_MARKET = "US"
 DEFAULT_SOURCE = "auto.dev"
 DEFAULT_CURRENCY = "USD"
@@ -41,16 +41,16 @@ def main():
 
     df = pd.read_csv(csv_path)
 
-    # created_at wird NICHT importiert -> kein Parsing nötig
+    # created_at is NOT imported -> no parsing needed
 
-    # 1) Insert into listings (Basis)
+    # 1) Insert into listings (Base)
     listings_rows = []
     for _, r in df.iterrows():
         listings_rows.append({
             "dataset_id": dataset_id,
             "market": market,
             "source": source,
-            "brand": _none_if_na(r.get("make")),  # wir nutzen brand=make im US-Fall
+            "brand": _none_if_na(r.get("make")),  # we use brand=make for US market
             "model": _none_if_na(r.get("model")),
             "title": None,
             "price": _none_if_na(r.get("price_usd")),
@@ -60,7 +60,7 @@ def main():
             "year": (int(r["year"]) if pd.notna(r.get("year")) else None),
             "registration": None,
             "location": _none_if_na(r.get("location")),
-            "url": _none_if_na(r.get("vdp_url")),  # als "url" der Listing-Detailseite
+            "url": _none_if_na(r.get("vdp_url")),  # as "url" of the listing detail page
         })
 
     batch_size = 500

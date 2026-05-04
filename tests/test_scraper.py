@@ -1,9 +1,9 @@
 """
-Testprogramm für ScraperDataScienceProjekt.py
-Testet die gesamte Parsing-Logik mit simuliertem HTML – ohne echten Browser.
+Test Suite: scraper.py
+Validates the complete HTML parsing logic for used car data collection,
+using simulated HTML structures to ensure reliability without a live browser.
 
-Ausführen:
-    pip install pytest beautifulsoup4
+Execution:
     pytest test_scraper.py -v
 """
 

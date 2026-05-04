@@ -7,11 +7,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 SUPABASE_URL = os.environ["SUPABASE_URL"]
-SUPABASE_KEY = os.environ["SUPABASE_SERVICE_ROLE_KEY"]  # nur lokal/Backend!
+SUPABASE_KEY = os.environ["SUPABASE_SERVICE_ROLE_KEY"]  # Local/Backend use only!
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# Defaults (können jetzt per CLI überschrieben werden)
+# Defaults (can be overridden via CLI)
 DEFAULT_MARKET = "DE"
 DEFAULT_SOURCE = "mobile"
 DEFAULT_CURRENCY = "EUR"
@@ -41,11 +41,11 @@ def main():
 
     df = pd.read_csv(csv_path)
 
-    # CSV normalisieren: URL-Spalte an DB anpassen
+    # Normalize CSV: Match URL column to DB schema
     if "URL" in df.columns and "url" not in df.columns:
         df = df.rename(columns={"URL": "url"})
 
-    # (optional) sanity check
+    # (Optional) sanity check
     required_cols = [
         "title", "price_eur", "mileage_km", "power_ps", "transmission", "fuel",
         "owners", "location", "url", "Ausstattung", "Beschreibung",
@@ -55,7 +55,7 @@ def main():
     if missing:
         raise ValueError(f"Missing columns in CSV: {missing}")
 
-    # 1) listings (Basisdaten)
+    # 1) listings (Base data)
     listings_rows = []
     for _, r in df.iterrows():
         listings_rows.append({
@@ -93,7 +93,7 @@ def main():
             "Wenn du unique constraints hast oder Errors auftreten, kann das passieren."
         )
 
-    # 2) listing_de (DE-spezifische Details inkl. Ausstattung/Beschreibung)
+    # 2) listing_de (DE-specific details incl. equipment/description)
     de_rows = []
     for listing_id, (_, r) in zip(inserted_listing_ids, df.iterrows()):
         de_rows.append({
@@ -105,7 +105,7 @@ def main():
             "car_age": (float(r["car_age"]) if pd.notna(r["car_age"]) else None),
             "price_per_km": (float(r["price_per_km"]) if pd.notna(r["price_per_km"]) else None),
 
-            # NEU: alles speichern
+            # NEW: save all
             "ausstattung": _none_if_na(r.get("Ausstattung")),
             "beschreibung": _none_if_na(r.get("Beschreibung")),
         })

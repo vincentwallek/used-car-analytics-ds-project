@@ -7,9 +7,7 @@ import pytest
 
 
 # ------------------------------------------------------------
-# data-preperation-de.py importieren
-# Wichtig: Wegen dem Bindestrich im Dateinamen kann man nicht
-# einfach "import data-preperation-de" schreiben.
+# Module Import Setup
 # ------------------------------------------------------------
 
 PROJECT_ROOT = Path(__file__).resolve().parent

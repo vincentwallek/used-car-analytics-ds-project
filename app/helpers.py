@@ -361,7 +361,7 @@ def run_ml_prediction(trained_models, market, brand, model_name, car_age, mileag
     if s_vals is None:
         return json.dumps({"error": "Modell konnte nicht geladen werden."})
         
-    # Wir geben ALLE Faktoren an die KI, damit sie gezielt filtern kann
+    # We pass ALL factors to the AI for targeted filtering
     impact_dict = {feat: round(float(val), 2) for feat, val in zip(s_vals[0].feature_names, s_vals[0].values)}
     
     result = {

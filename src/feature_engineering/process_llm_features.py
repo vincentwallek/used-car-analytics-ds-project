@@ -220,7 +220,7 @@ def upload_to_supabase(supabase, df):
 
 
 # =========================
-# MAIN PIPELINE
+# MAIN EXECUTION PIPELINE
 # =========================
 
 def run_pipeline():

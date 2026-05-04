@@ -7,8 +7,7 @@ import pytest
 
 
 # ------------------------------------------------------------
-# data-preperation-us.py importieren
-# Wegen Bindestrich im Dateinamen geht kein normales import.
+# Module Import Setup
 # ------------------------------------------------------------
 
 PROJECT_ROOT = Path(__file__).resolve().parent
