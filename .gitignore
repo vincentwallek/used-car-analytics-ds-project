@@ -1,0 +1,28 @@
+# --- Data & Output ---
+data/
+*.csv
+*.xlsx
+*.parquet
+
+# --- Environment & Secrets ---
+.env
+.env.local
+secrets.toml
+
+# --- Python Cache & Build ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# --- Virtual Environments ---
+venv/
+env/
+.venv/
+
+# --- IDEs & OS Specific ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
