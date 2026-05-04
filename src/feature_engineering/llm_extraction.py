@@ -6,9 +6,13 @@ import os
 # =========================
 # DB CONNECTION
 # =========================
-engine = create_engine(
-    "postgresql://postgres.tnwwljxazuaefezooesq:***REMOVED***@aws-0-eu-west-1.pooler.supabase.com:5432/postgres"
-)
+from dotenv import load_dotenv
+
+load_dotenv()
+db_url = os.environ.get("SUPABASE_DB_URL")
+if not db_url:
+    raise ValueError("Missing SUPABASE_DB_URL in environment")
+engine = create_engine(db_url)
 
 # =========================
 # LOAD DATA (nur Text!)
