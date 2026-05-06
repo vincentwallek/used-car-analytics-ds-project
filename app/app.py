@@ -1373,60 +1373,67 @@ def _render_us_form_fields(enc_cats, db_data, brand, model_name, role, show_adva
 
 
 def _render_us_advanced(enc_cats, db_data=None, brand=None, model_name=None):
-    """US erweiterte Klassifizierungsfelder — gefiltert nach Marke und Modell."""
-    # Filter options by selected brand AND model from db_data
-    model_data = pd.DataFrame()
-    if db_data is not None and not db_data.empty and model_name:
-        model_data = db_data[db_data['model'] == model_name].copy()
-        # Also filter by brand to prevent cross-brand contamination
-        if brand and 'brand' in model_data.columns:
-            model_data = model_data[model_data['brand'] == brand]
-        
-        fuel = st.session_state.get("us_fuel")
-        if fuel and "fuel" in model_data.columns:
-            model_data = model_data[model_data["fuel"].astype(str).str.lower() == str(fuel).lower()]
-            
-        cyl = st.session_state.get("us_cyl")
-        if cyl is not None and "cylinders" in model_data.columns:
-            model_data = model_data[pd.to_numeric(model_data["cylinders"], errors="coerce") == cyl]
+    """US erweiterte Klassifizierungsfelder — strikt gefiltert nach Marke und Modell."""
+    # Two-tier filtering:
+    # 1) base_data = brand + model only (always used as fallback)
+    # 2) refined_data = base_data + fuel + cylinders (used when non-empty)
+    base_data = pd.DataFrame()
+    refined_data = pd.DataFrame()
+
+    if db_data is not None and not db_data.empty and brand and model_name:
+        # Tier 1: Filter by brand + model
+        base_data = db_data[
+            (db_data['brand'] == brand) & (db_data['model'] == model_name)
+        ].copy()
+
+        if not base_data.empty:
+            # Tier 2: Additionally filter by fuel and cylinders
+            refined_data = base_data.copy()
+
+            fuel = st.session_state.get("us_fuel")
+            if fuel and "fuel" in refined_data.columns:
+                fuel_filtered = refined_data[
+                    refined_data["fuel"].astype(str).str.lower() == str(fuel).lower()
+                ]
+                if not fuel_filtered.empty:
+                    refined_data = fuel_filtered
+
+            cyl = st.session_state.get("us_cyl")
+            if cyl is not None and "cylinders" in refined_data.columns:
+                cyl_filtered = refined_data[
+                    pd.to_numeric(refined_data["cylinders"], errors="coerce") == cyl
+                ]
+                if not cyl_filtered.empty:
+                    refined_data = cyl_filtered
+
+    # Choose best available data source (never fall back to enc_cats if brand+model data exists)
+    opts_source = refined_data if not refined_data.empty else base_data
+
+    def _get_opts(col, fallback_key):
+        """Get options from filtered data, with enc_cats only as last resort."""
+        if not opts_source.empty and col in opts_source.columns:
+            vals = sorted(opts_source[col].dropna().astype(str).unique())
+            vals = [v for v in vals if v and v != 'nan']
+            if vals:
+                return vals
+        # Only use encoder categories if NO brand+model data exists at all
+        if base_data.empty:
+            return enc_cats.get(fallback_key, ["unknown"])
+        return ["unknown"]
 
     f1, f2, f3 = st.columns(3)
     with f1:
-        if not model_data.empty and 'trim' in model_data.columns:
-            trim_opts = sorted(model_data['trim'].dropna().astype(str).unique())
-            trim_opts = [t for t in trim_opts if t and t != 'nan']
-        else:
-            trim_opts = enc_cats.get("trim", ["unknown"])
-        if not trim_opts:
-            trim_opts = ["unknown"]
+        trim_opts = _get_opts("trim", "trim")
         st.selectbox("Ausstattungslinie", trim_opts, key="us_trim_adv", format_func=_fmt)
     with f2:
-        if not model_data.empty and 'engine' in model_data.columns:
-            eng_opts = sorted(model_data['engine'].dropna().astype(str).unique())
-            eng_opts = [e for e in eng_opts if e and e != 'nan']
-        else:
-            eng_opts = enc_cats.get("engine", ["unknown"])
-        if not eng_opts:
-            eng_opts = ["unknown"]
+        eng_opts = _get_opts("engine", "engine")
         st.selectbox("Motor", eng_opts, key="us_engine", format_func=_fmt)
     with f3:
-        if not model_data.empty and 'exterior_color' in model_data.columns:
-            ext_opts = sorted(model_data['exterior_color'].dropna().astype(str).unique())
-            ext_opts = [e for e in ext_opts if e and e != 'nan']
-        else:
-            ext_opts = enc_cats.get("exterior_color", ["unknown"])
-        if not ext_opts:
-            ext_opts = ["unknown"]
+        ext_opts = _get_opts("exterior_color", "exterior_color")
         st.selectbox("Au\u00dfenfarbe", ext_opts, key="us_ext_color", format_func=_fmt)
     f4, f5 = st.columns(2)
     with f4:
-        if not model_data.empty and 'interior_color' in model_data.columns:
-            int_opts = sorted(model_data['interior_color'].dropna().astype(str).unique())
-            int_opts = [i for i in int_opts if i and i != 'nan']
-        else:
-            int_opts = enc_cats.get("interior_color", ["unknown"])
-        if not int_opts:
-            int_opts = ["unknown"]
+        int_opts = _get_opts("interior_color", "interior_color")
         st.selectbox("Innenfarbe", int_opts, key="us_int_color", format_func=_fmt)
     with f5:
         pass
