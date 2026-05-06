@@ -384,27 +384,17 @@ st.markdown(f"""
         .stCheckbox > label {{
             background-color: transparent !important;
             background: transparent !important;
+            border: none !important;
         }}
-        /* The actual checkbox square (unchecked) - force white bg + dark border */
+        /* Hide the checkbox square completely */
         [data-testid="stCheckbox"] [data-baseweb="checkbox"] > div:first-child,
         [data-testid="stCheckbox"] div[role="checkbox"] > div:first-child,
         .stCheckbox [data-baseweb="checkbox"] > div:first-child {{
-            background-color: {T['card_bg']} !important;
-            background: {T['card_bg']} !important;
-            border: 2px solid {T['text_primary']} !important;
-            border-radius: 4px !important;
+            display: none !important;
         }}
-        /* Checked state - keep white bg with dark border (no blue) */
-        [data-testid="stCheckbox"] div[aria-checked="true"] > div:first-child,
-        [data-testid="stCheckbox"] input:checked ~ div > div:first-child,
-        .stCheckbox div[aria-checked="true"] > div:first-child {{
-            background-color: {T['card_bg']} !important;
-            background: {T['card_bg']} !important;
-            border: 2px solid {T['text_primary']} !important;
-        }}
-        /* Checkbox SVG checkmark - dark color on white bg */
+        /* Hide SVG checkmark too */
         [data-testid="stCheckbox"] svg {{
-            fill: {T['text_primary']} !important;
+            display: none !important;
         }}
 
         /* --- Toggle switch --- */
