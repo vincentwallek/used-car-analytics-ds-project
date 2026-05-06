@@ -394,17 +394,17 @@ st.markdown(f"""
             border: 2px solid {T['text_primary']} !important;
             border-radius: 4px !important;
         }}
-        /* Checked state - accent blue */
+        /* Checked state - keep white bg with dark border (no blue) */
         [data-testid="stCheckbox"] div[aria-checked="true"] > div:first-child,
         [data-testid="stCheckbox"] input:checked ~ div > div:first-child,
         .stCheckbox div[aria-checked="true"] > div:first-child {{
-            background-color: {T['accent']} !important;
-            background: {T['accent']} !important;
-            border-color: {T['accent']} !important;
+            background-color: {T['card_bg']} !important;
+            background: {T['card_bg']} !important;
+            border: 2px solid {T['text_primary']} !important;
         }}
-        /* Checkbox SVG checkmark */
+        /* Checkbox SVG checkmark - dark color on white bg */
         [data-testid="stCheckbox"] svg {{
-            fill: #ffffff !important;
+            fill: {T['text_primary']} !important;
         }}
 
         /* --- Toggle switch --- */
