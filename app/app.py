@@ -1042,6 +1042,11 @@ def view_app():
                     user_trans = input_vals.get("transmission")
                     if user_trans and "transmission" in matches.columns:
                         matches = matches[matches["transmission"].astype(str).str.lower() == str(user_trans).lower()]
+                    
+                    user_garantie = input_vals.get("garantie_monate", 0)
+                    if user_garantie > 0 and "garantie_monate" in matches.columns:
+                        matches["garantie_monate"] = pd.to_numeric(matches["garantie_monate"], errors="coerce")
+                        matches = matches[matches["garantie_monate"].fillna(0) >= user_garantie]
 
                 if not matches.empty:
                     # Location filter for map interaction
@@ -1274,14 +1279,19 @@ def _render_de_form_fields(enc_cats, role, show_advanced):
                 import numpy as np
                 default_ps = int(np.median(matching_ps))
 
+    # Track trim changes to force PS update when trim selection changes
+    trim_key = f"{brand}_{model_name}_{sel_trim}"
+    prev_trim_key = st.session_state.get("_prev_trim_key", "")
+    if trim_key != prev_trim_key and default_ps != 150:
+        st.session_state.de_power = default_ps
+        st.session_state._prev_trim_key = trim_key
+
     st.markdown("#### Fahrzeugdaten")
     c1, c2, c3 = st.columns(3)
     with c1:
         st.number_input("Kilometerstand", 0, 500000, 50000, 5000, key="de_mileage")
         st.number_input("Alter (Jahre)", 0, 40, 3, key="de_age")
-        # Check if user already entered a different PS value to avoid overwriting typed input
-        current_ps = st.session_state.get("de_power", float(default_ps))
-        st.number_input("Leistung (PS)", 30, 1000, int(current_ps), key="de_power")
+        st.number_input("Leistung (PS)", 30, 1000, default_ps, key="de_power")
     with c2:
         st.number_input("Vorbesitzer", 1, 10, 1, key="de_owners")
         trans_opts = enc_cats.get("transmission", ["automatic", "manual"])
@@ -1359,15 +1369,18 @@ def _render_us_form_fields(enc_cats, db_data, brand, model_name, role, show_adva
 
     if show_advanced:
         st.markdown("#### Erweiterte Optionen")
-        _render_us_advanced(enc_cats, db_data, model_name)
+        _render_us_advanced(enc_cats, db_data, brand, model_name)
 
 
-def _render_us_advanced(enc_cats, db_data=None, model_name=None):
-    """US erweiterte Klassifizierungsfelder — gefiltert nach Modell."""
-    # Filter options by selected model from db_data
+def _render_us_advanced(enc_cats, db_data=None, brand=None, model_name=None):
+    """US erweiterte Klassifizierungsfelder — gefiltert nach Marke und Modell."""
+    # Filter options by selected brand AND model from db_data
     model_data = pd.DataFrame()
     if db_data is not None and not db_data.empty and model_name:
-        model_data = db_data[db_data['model'] == model_name]
+        model_data = db_data[db_data['model'] == model_name].copy()
+        # Also filter by brand to prevent cross-brand contamination
+        if brand and 'brand' in model_data.columns:
+            model_data = model_data[model_data['brand'] == brand]
         
         fuel = st.session_state.get("us_fuel")
         if fuel and "fuel" in model_data.columns:
