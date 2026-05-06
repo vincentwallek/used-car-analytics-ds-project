@@ -258,9 +258,122 @@ st.markdown(f"""
             fill: {T['text_secondary']} !important;
         }}
 
+        /* --- Selectbox dropdown popup (BaseWeb) --- */
+        [data-baseweb="popover"] {{
+            background-color: {T['card_bg']} !important;
+            border: 1px solid {T['card_border']} !important;
+            border-radius: 8px !important;
+        }}
+        [data-baseweb="popover"] > div {{
+            background-color: {T['card_bg']} !important;
+        }}
+        [data-baseweb="menu"] {{
+            background-color: {T['card_bg']} !important;
+        }}
+        [data-baseweb="menu"] ul {{
+            background-color: {T['card_bg']} !important;
+        }}
+        [data-baseweb="menu"] li {{
+            background-color: {T['card_bg']} !important;
+            color: {T['text_primary']} !important;
+        }}
+        [data-baseweb="menu"] li:hover {{
+            background-color: {T['input_bg']} !important;
+        }}
+        [data-baseweb="menu"] li[aria-selected="true"] {{
+            background-color: {T['accent']} !important;
+            color: #ffffff !important;
+        }}
+        /* Ensure the select control text is readable */
+        [data-baseweb="select"] {{
+            background-color: {T['input_bg']} !important;
+        }}
+        [data-baseweb="select"] > div {{
+            background-color: {T['input_bg']} !important;
+            color: {T['input_text']} !important;
+            border-color: {T['input_border']} !important;
+        }}
+        [data-baseweb="select"] span {{
+            color: {T['input_text']} !important;
+        }}
+        /* Dropdown list items */
+        [role="listbox"] {{
+            background-color: {T['card_bg']} !important;
+        }}
+        [role="option"] {{
+            background-color: {T['card_bg']} !important;
+            color: {T['text_primary']} !important;
+        }}
+        [role="option"]:hover {{
+            background-color: {T['input_bg']} !important;
+        }}
+        [role="option"][aria-selected="true"] {{
+            background-color: {T['accent']} !important;
+            color: #ffffff !important;
+        }}
+
+        /* --- Number input +/- buttons --- */
+        .stNumberInput > div > div > div > button {{
+            background-color: {T['input_bg']} !important;
+            color: {T['text_primary']} !important;
+            border: 1px solid {T['input_border']} !important;
+        }}
+        .stNumberInput > div > div > div > button:hover {{
+            background-color: {T['accent']} !important;
+            color: #ffffff !important;
+            border-color: {T['accent']} !important;
+        }}
+        .stNumberInput > div > div > div > button svg {{
+            fill: {T['text_primary']} !important;
+        }}
+        .stNumberInput > div > div > div > button:hover svg {{
+            fill: #ffffff !important;
+        }}
+        /* Step buttons wrapper */
+        [data-baseweb="input"] {{
+            background-color: {T['input_bg']} !important;
+        }}
+        [data-baseweb="input"] input {{
+            background-color: {T['input_bg']} !important;
+            color: {T['input_text']} !important;
+        }}
+        /* BaseWeb button-stepper */
+        [data-baseweb="button-stepper"] {{
+            background-color: {T['input_bg']} !important;
+            color: {T['text_primary']} !important;
+            border-color: {T['input_border']} !important;
+        }}
+        [data-baseweb="button-stepper"]:hover {{
+            background-color: {T['accent']} !important;
+            color: #ffffff !important;
+        }}
+
         /* --- Checkbox --- */
         .stCheckbox span {{
             color: {T['text_primary']} !important;
+        }}
+        /* Checkbox box itself */
+        .stCheckbox [data-baseweb="checkbox"] > div:first-child {{
+            background-color: {T['card_bg']} !important;
+            border-color: {T['input_border']} !important;
+        }}
+        .stCheckbox [data-baseweb="checkbox"] input:checked + div:first-child {{
+            background-color: {T['accent']} !important;
+            border-color: {T['accent']} !important;
+        }}
+        [data-testid="stCheckbox"] > div {{
+            background-color: transparent !important;
+        }}
+        [data-testid="stCheckbox"] > div > div {{
+            background-color: transparent !important;
+        }}
+
+        /* --- Toggle switch --- */
+        .stToggle [data-baseweb="toggle"] > div {{
+            background-color: {T['input_border']} !important;
+        }}
+        .stToggle [data-baseweb="toggle"] input:checked + div {{
+            background-color: {T['accent']} !important;
         }}
 
         /* --- Metrics --- */
