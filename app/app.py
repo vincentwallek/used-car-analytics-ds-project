@@ -103,13 +103,15 @@ st.markdown(f"""
             display: none !important;
         }}
 
-        /* --- Theme toggle icon button --- */
+        /* --- Theme toggle icon button (must override .stButton > button) --- */
         .theme-toggle-col .stButton > button,
         .theme-toggle-col .stButton > button:focus,
+        .theme-toggle-col .stButton > button:hover,
         .theme-toggle-col .stButton > button:active,
-        .theme-toggle-col .stButton > button:visited {{
-            background: transparent !important;
-            background-color: transparent !important;
+        .theme-toggle-col .stButton > button:visited,
+        div.theme-toggle-col .stButton > button {{
+            background: {T['bg']} !important;
+            background-color: {T['bg']} !important;
             border: none !important;
             box-shadow: none !important;
             font-size: 1.5rem;
@@ -118,13 +120,14 @@ st.markdown(f"""
             width: auto;
         }}
         .theme-toggle-col .stButton > button:hover {{
-            background: transparent !important;
-            background-color: transparent !important;
             transform: scale(1.15);
         }}
-        .theme-toggle-col .stButton > button p {{
+        .theme-toggle-col .stButton > button p,
+        .theme-toggle-col .stButton > button span,
+        .theme-toggle-col .stButton > button div {{
             color: inherit !important;
             background: transparent !important;
+            background-color: transparent !important;
         }}
 
         /* --- Typography --- */
@@ -370,29 +373,34 @@ st.markdown(f"""
         .stCheckbox span {{
             color: {T['text_primary']} !important;
         }}
-        /* Checkbox box - all possible selectors */
-        .stCheckbox div[role="checkbox"],
-        .stCheckbox [data-baseweb="checkbox"] div,
-        [data-testid="stCheckbox"] div[role="checkbox"],
-        [data-testid="stCheckbox"] [data-baseweb="checkbox"] > div:first-child {{
-            background-color: {T['card_bg']} !important;
-            border-color: {T['text_secondary']} !important;
-        }}
-        /* Checked state */
-        .stCheckbox input:checked ~ div,
-        .stCheckbox input:checked + div,
-        [data-testid="stCheckbox"] input:checked ~ div[role="checkbox"],
-        [data-testid="stCheckbox"] div[aria-checked="true"] {{
-            background-color: {T['accent']} !important;
-            border-color: {T['accent']} !important;
-        }}
-        /* Remove any background from checkbox container */
+        /* Remove any background from checkbox containers */
         [data-testid="stCheckbox"],
         [data-testid="stCheckbox"] > div,
         [data-testid="stCheckbox"] > div > div,
         [data-testid="stCheckbox"] > label,
-        [data-testid="stCheckbox"] label {{
+        [data-testid="stCheckbox"] label,
+        .stCheckbox,
+        .stCheckbox > div,
+        .stCheckbox > label {{
             background-color: transparent !important;
+            background: transparent !important;
+        }}
+        /* The actual checkbox square (unchecked) - force white bg + dark border */
+        [data-testid="stCheckbox"] [data-baseweb="checkbox"] > div:first-child,
+        [data-testid="stCheckbox"] div[role="checkbox"] > div:first-child,
+        .stCheckbox [data-baseweb="checkbox"] > div:first-child {{
+            background-color: {T['card_bg']} !important;
+            background: {T['card_bg']} !important;
+            border: 2px solid {T['text_primary']} !important;
+            border-radius: 4px !important;
+        }}
+        /* Checked state - accent blue */
+        [data-testid="stCheckbox"] div[aria-checked="true"] > div:first-child,
+        [data-testid="stCheckbox"] input:checked ~ div > div:first-child,
+        .stCheckbox div[aria-checked="true"] > div:first-child {{
+            background-color: {T['accent']} !important;
+            background: {T['accent']} !important;
+            border-color: {T['accent']} !important;
         }}
         /* Checkbox SVG checkmark */
         [data-testid="stCheckbox"] svg {{
