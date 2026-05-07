@@ -29,10 +29,10 @@ SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
 SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
 
 SOURCE_TABLE = "listing_de"
-TARGET_TABLE = "listing_features"  # Die NEUE Tabelle für ML-Features
+TARGET_TABLE = "listing_features"  # Target table for ML features
 
 SAVE_LOCAL = True
-UPLOAD_TO_SUPABASE = True  # Auf True setzen für den automatischen Upload
+UPLOAD_TO_SUPABASE = True  # Set to True for automatic upload
 
 
 # =========================
@@ -49,8 +49,8 @@ def get_supabase_client():
 
 def fetch_data(supabase):
     """
-    Holt nur die listing_id und die unstrukturierten KI-Features.
-    Wir brauchen hier keine Preis- oder Modelldaten, das spart Traffic!
+    Fetches only listing_id and unstructured AI features.
+    No price or model data needed here, reducing traffic.
     """
     response = (
         supabase
@@ -68,7 +68,7 @@ def fetch_data(supabase):
 # =========================
 
 def robust_parse(raw):
-    """Sicheres Parsen von fehlerhaftem JSON vom LLM."""
+    """Safely parse potentially malformed JSON from LLM output."""
     if isinstance(raw, (dict, list)):
         return raw
     if not isinstance(raw, str):
@@ -83,7 +83,7 @@ def robust_parse(raw):
     except json.JSONDecodeError:
         pass
 
-    # Wenn JSON-Parse fehlschlägt, probiere ast.literal_eval (repariert z.B. single quotes)
+    # If JSON parsing fails, try ast.literal_eval (handles e.g. single quotes)
     fixed = re.sub(r'\btrue\b', 'True', raw)
     fixed = re.sub(r'\bfalse\b', 'False', fixed)
     fixed = re.sub(r'\bnull\b', 'None', fixed)
@@ -100,13 +100,13 @@ def robust_parse(raw):
 
 def process_ai_features(raw_data):
     """
-    Extrahieren der exakten Features aus dem Prompt.
+    Extract structured features from the LLM prompt output.
     """
     data = robust_parse(raw_data)
     if not isinstance(data, dict):
         return {}
 
-    # Alles rekursiv in string-basiertes flaches Dictionary schreiben
+    # Recursively flatten nested dict into a string-based flat dictionary
     flat_data = {}
 
     def _traverse(node, prefix=''):
@@ -122,14 +122,14 @@ def process_ai_features(raw_data):
 
     features = {}
 
-    # --- HELPER FUNKTION ---
+    # --- HELPER FUNCTION ---
     def get_val_for_keys(keys_list):
         for k, v in flat_data.items():
             if any(key in k for key in keys_list):
                 return v
         return ''
 
-    # --- TEIL 1: HISTORIE & ZUSTAND ---
+    # --- PART 1: HISTORY & CONDITION ---
 
     # TÜV
     tuv_val = get_val_for_keys(['tüv', 'tuv', 'hu/au', 'hu'])
@@ -150,7 +150,7 @@ def process_ai_features(raw_data):
 
     # Garantie
     garantie_val = get_val_for_keys(['garantie'])
-    match = re.search(r'(\d+)', garantie_val)  # Sucht nach der Zahl (Monate)
+    match = re.search(r'(\d+)', garantie_val)  # Search for number (months)
     features['garantie_monate'] = int(match.group(1)) if match else 0
 
     # Unfallfrei
@@ -162,12 +162,12 @@ def process_ai_features(raw_data):
     else:
         features['unfallfrei'] = 0
 
-    # Mängel
+    # Defects
     mangel_val = get_val_for_keys(['mängel', 'mangel'])
     features['mangel_vorhanden'] = 0 if (
                 'keine' in mangel_val or not mangel_val or mangel_val in ['none', 'false', '0']) else 1
 
-    # --- TEIL 2: AUSSTATTUNG ---
+    # --- PART 2: EQUIPMENT ---
 
     equip_keys = {
         'ausstattung_distronic': ['distronic', 'acc', 'abstandsregeltempomat'],
@@ -205,14 +205,14 @@ def save_local(df):
 
 
 def upload_to_supabase(supabase, df):
-    # NaN Werte in None (für die Datenbank als Null-Werte) umwandeln
+    # Convert NaN values to None (stored as NULL in the database)
     df = df.where(pd.notnull(df), None)
     records = df.to_dict(orient="records")
 
     batch_size = 500
     for i in range(0, len(records), batch_size):
         batch = records[i:i + batch_size]
-        # upsert macht ein Insert oder Update (falls die ID schon existiert)
+        # upsert performs an insert or update (if the ID already exists)
         supabase.table(TARGET_TABLE).upsert(batch).execute()
 
     print(f"Uploaded {len(records)} rows to {TARGET_TABLE} successfully!")
@@ -234,16 +234,16 @@ def run_pipeline():
         return
 
     print("Extracting structured features from JSON...")
-    # Extrahiere die Features
+    # Extract the features
     features_df = df["ai_features"].apply(process_ai_features).apply(pd.Series)
 
     print("Combining listing_ids with features...")
-    # Verbinde listing_id aus den Rohdaten mit den extrahierten Spalten
-    # Wir lassen ai_features bewusst weg, um es nicht mit in die neue DB hochzuladen
+    # Combine listing_id from raw data with extracted feature columns
+    # Intentionally omitting ai_features to avoid uploading it to the new table
     df_final = pd.concat([df[["listing_id"]], features_df], axis=1)
 
-    # Entferne Zeilen, in denen keine Features generiert werden konnten
-    # (falls z.B. alle Spalten NaN sind außer listing_id)
+    # Remove rows where no features could be generated
+    # (e.g. all columns are NaN except listing_id)
     df_final = df_final.dropna(subset=features_df.columns, how='all')
 
     if SAVE_LOCAL:
