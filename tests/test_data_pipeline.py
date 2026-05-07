@@ -111,7 +111,7 @@ def test_cmd_clean_us_with_input(monkeypatch):
 
     assert called["cmd"] == [
         "python",
-        "data-preperation_us.py",
+        "data_preparation_us.py",
         "raw_us.csv"
     ]
 
@@ -134,7 +134,7 @@ def test_cmd_clean_us_without_input(monkeypatch):
 
     assert called["cmd"] == [
         "python",
-        "data-preperation_us.py"
+        "data_preparation_us.py"
     ]
 
 
@@ -156,7 +156,7 @@ def test_cmd_clean_de_with_input(monkeypatch):
 
     assert called["cmd"] == [
         "python",
-        "data-preperation_de.py",
+        "data_preparation_de.py",
         "raw_de.csv"
     ]
 
@@ -179,7 +179,7 @@ def test_cmd_clean_de_without_input(monkeypatch):
 
     assert called["cmd"] == [
         "python",
-        "data-preperation_de.py"
+        "data_preparation_de.py"
     ]
 
 
@@ -201,7 +201,7 @@ def test_cmd_clean_market_is_case_insensitive(monkeypatch):
 
     assert called["cmd"] == [
         "python",
-        "data-preperation_us.py",
+        "data_preparation_us.py",
         "raw.csv"
     ]
 
@@ -434,7 +434,7 @@ def test_main_clean_command(monkeypatch):
 
     assert called["cmd"] == [
         "python",
-        "data-preperation_us.py",
+        "data_preparation_us.py",
         "raw.csv"
     ]
 
@@ -502,7 +502,7 @@ def test_main_run_command(monkeypatch):
     assert calls == [
         [
             "python",
-            "data-preperation_us.py",
+            "data_preparation_us.py",
             "raw_us.csv"
         ],
         [

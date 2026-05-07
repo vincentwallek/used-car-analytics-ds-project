@@ -656,7 +656,7 @@ def test_clean_us_data_keeps_only_valid_rows_from_mixed_dataframe():
 # ------------------------------------------------------------
 
 def test_main_without_input_argument_exits_with_error(monkeypatch, capsys):
-    monkeypatch.setattr(sys, "argv", ["data-preperation-us.py"])
+    monkeypatch.setattr(sys, "argv", ["data_preparation_us.py"])
 
     with pytest.raises(SystemExit) as exc:
         prep_us.main()
@@ -671,7 +671,7 @@ def test_main_with_missing_file_exits_with_error(monkeypatch, capsys):
     monkeypatch.setattr(
         sys,
         "argv",
-        ["data-preperation-us.py", "missing_file.csv"]
+        ["data_preparation_us.py", "missing_file.csv"]
     )
 
     with pytest.raises(SystemExit) as exc:
@@ -693,7 +693,7 @@ def test_main_reads_csv_cleans_data_and_writes_output(tmp_path, monkeypatch, cap
     monkeypatch.setattr(
         sys,
         "argv",
-        ["data-preperation-us.py", str(input_file)]
+        ["data_preparation_us.py", str(input_file)]
     )
 
     prep_us.main()
