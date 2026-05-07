@@ -85,7 +85,8 @@ def _make_df(n=3, missing_cols=None):
 
 def _make_supabase_mock(n=3):
     """Return a supabase mock that yields sequential IDs on listings insert."""
-    ids = iter(range(1, n + 1))
+    import itertools
+    ids = itertools.count(1)
 
     def _insert_side_effect(rows):
         mock = MagicMock()

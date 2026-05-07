@@ -87,7 +87,7 @@ def clean_us_data(df: pd.DataFrame) -> pd.DataFrame:
 
     # Datetime
     if "created_at" in df.columns:
-        df["created_at"] = pd.to_datetime(df["created_at"], errors="coerce", utc=True)
+        df["created_at"] = pd.to_datetime(df["created_at"], errors="coerce", utc=True).astype("datetime64[ns, UTC]")
 
     # Numeric
     numeric_cols = [
@@ -224,12 +224,9 @@ def main():
     df_clean = clean_us_data(df)
     print(f"Rows after cleaning:  {len(df_clean)}")
 
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    output_dir = os.path.join(BASE_DIR, "data", "processed")
-    os.makedirs(output_dir, exist_ok=True)
-    output_path = os.path.join(output_dir, f"cleaned_{os.path.basename(input_path)}")
-    df_clean.to_csv(output_path, index=False)
-    print(f"Saved cleaned data to: {output_path}")
+    output_file = f"cleaned_{os.path.basename(input_path)}"
+    df_clean.to_csv(output_file, index=False)
+    print(f"Saved cleaned data to: {output_file}")
 
 
 if __name__ == "__main__":

@@ -152,7 +152,7 @@ def train_model(X, y):
     grid_search.fit(X_train, y_train)
     best_model = grid_search.best_estimator_
 
-    print(f"\\n--- Best parameter mix found ---")
+    print(f"\n--- Bester Parameter-Mix gefunden ---")
     print(grid_search.best_params_)
 
     # Model Evaluation des Gewinner-Modells
@@ -160,9 +160,9 @@ def train_model(X, y):
     mae = mean_absolute_error(y_test, predictions)
     r2 = r2_score(y_test, predictions)
 
-    print(f"\\n--- Model Evaluation (Best Model) ---")
+    print(f"\n--- Model Evaluation (Best Model) ---")
     print(f"R² Score: {r2:.2f}")
-    print(f"Mean Absolute Error (MAE): {mae:.2f} €\n")
+    print(f"Mean Absolute Error (MAE): {mae:.2f} \u20ac\n")
 
     return best_model, X_train
 
@@ -177,8 +177,8 @@ def explain_model(model, X_train):
     shap_values = explainer(sample_car)
 
     basis_preis = shap_values.base_values[0]
-    print(f"Base Price: €{basis_preis:.2f}")
-    print("Top 15 impact factors for this specific car:")
+    print(f"Basis-Preis: {basis_preis:.2f} \u20ac")
+    print("Top 15 Einflussfaktoren fuer dieses Auto:")
 
     impacts = pd.DataFrame({
         'Feature': sample_car.columns,

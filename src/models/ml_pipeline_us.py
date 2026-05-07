@@ -126,7 +126,7 @@ def load_data():
 # 2. DATA PREPROCESSING
 # =========================
 def preprocess_data(df):
-    print("\\nPreparing US data...")
+    print("\nPreparing US data...")
     count_start = len(df)
 
     # =========================================================================
@@ -136,7 +136,7 @@ def preprocess_data(df):
     df = df[~df["brand"].str.contains("mercedes", case=False, na=False)]
 
     count_no_mercedes = len(df)
-    print(f"ℹ️ Info: {count_start - count_no_mercedes} Mercedes vehicles were temporarily filtered out.")
+    print(f"Info: {count_start - count_no_mercedes} Mercedes vehicles were temporarily filtered out.")
     # =========================================================================
     # ⚠️ TEMPORARY FILTER: END
     # =========================================================================
@@ -145,8 +145,8 @@ def preprocess_data(df):
     df = df.dropna(subset=["price", "mileage", "car_age"])
 
     count_after_na = len(df)
-    print(f"ℹ️ Info: {count_no_mercedes - count_after_na} cars were removed due to missing price, mileage, or age.")
-    print(f"-> {count_after_na} clean cars remain for training.\\n")
+    print(f"Info: {count_no_mercedes - count_after_na} cars were removed due to missing price, mileage, or age.")
+    print(f"-> {count_after_na} saubere Autos remain for training.\n")
 
     # Fill numerical missing values with median
     numeric_fills = ["accident_count", "owner_count", "cylinders", "doors", "seats"]
@@ -203,7 +203,7 @@ def train_model(X, y):
     grid_search.fit(X_train, y_train)
     best_model = grid_search.best_estimator_
 
-    print(f"\\n--- Best parameter mix found (US) ---")
+    print(f"\n--- Bester Parameter-Mix gefunden (US) ---")
     print(grid_search.best_params_)
 
     # Model Evaluation
@@ -211,7 +211,7 @@ def train_model(X, y):
     mae = mean_absolute_error(y_test, predictions)
     r2 = r2_score(y_test, predictions)
 
-    print(f"\\n--- Model Evaluation US (Best Model) ---")
+    print(f"\n--- Model Evaluation US (Best Model) ---")
     print(f"R² Score: {r2:.2f}")
     print(f"Mean Absolute Error (MAE): {mae:.2f} $\n")
 
@@ -228,8 +228,8 @@ def explain_model(model, X_train):
     shap_values = explainer(sample_car)
 
     basis_preis = shap_values.base_values[0]
-    print(f"Base Price: ${basis_preis:.2f}")
-    print("Top 15 impact factors for this specific US car:")
+    print(f"Basis-Preis: ${basis_preis:.2f}")
+    print("Top 15 Einflussfaktoren fuer dieses US Auto:")
 
     impacts = pd.DataFrame({
         'Feature': sample_car.columns,

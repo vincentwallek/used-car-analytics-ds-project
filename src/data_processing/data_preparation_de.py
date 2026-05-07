@@ -144,13 +144,10 @@ def main():
     df_clean = clean_de_data(df)
     print(f"Rows after cleaning:  {len(df_clean)}")
 
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    output_dir = os.path.join(BASE_DIR, "data", "processed")
-    os.makedirs(output_dir, exist_ok=True)
-    output_path = os.path.join(output_dir, f"cleaned_{os.path.basename(input_path)}")
-    df_clean.to_csv(output_path, index=False)
+    output_file = f"cleaned_{os.path.basename(input_path)}"
+    df_clean.to_csv(output_file, index=False)
 
-    print(f"Saved cleaned data to: {output_path}")
+    print(f"Saved cleaned data to: {output_file}")
 
 
 if __name__ == "__main__":

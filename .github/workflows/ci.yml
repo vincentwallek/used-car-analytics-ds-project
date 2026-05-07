@@ -50,6 +50,8 @@ jobs:
         run: |
           echo "SUPABASE_URL=https://placeholder.supabase.co" >> $GITHUB_ENV
           echo "SUPABASE_KEY=placeholder-key" >> $GITHUB_ENV
+          echo "SUPABASE_SERVICE_ROLE_KEY=placeholder-key" >> $GITHUB_ENV
+          echo "SUPABASE_DB_URL=postgresql://placeholder@localhost/testdb" >> $GITHUB_ENV
           echo "GROQ_API_KEY=placeholder-key" >> $GITHUB_ENV
 
       # ── Run Tests ─────────────────────────────────────────────
