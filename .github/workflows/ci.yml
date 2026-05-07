@@ -1,0 +1,68 @@
+# GitHub Actions CI Pipeline
+# Runs the full test suite on every push and pull request.
+# Tests use mocked external services (Supabase, Selenium) — no secrets required.
+
+name: CI - Test Suite
+
+on:
+  push:
+    branches: [main, dev, "feature/**"]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      # ── Checkout ──────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Python Setup ──────────────────────────────────────────
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # ── Dependency Cache ──────────────────────────────────────
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+
+      # ── Install Dependencies ──────────────────────────────────
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # ── Dummy Environment Variables ───────────────────────────
+      # Tests mock all external calls. These placeholders prevent
+      # ImportError in modules that read env vars at import time.
+      - name: Set dummy environment variables
+        run: |
+          echo "SUPABASE_URL=https://placeholder.supabase.co" >> $GITHUB_ENV
+          echo "SUPABASE_KEY=placeholder-key" >> $GITHUB_ENV
+          echo "GROQ_API_KEY=placeholder-key" >> $GITHUB_ENV
+
+      # ── Run Tests ─────────────────────────────────────────────
+      - name: Run test suite with pytest
+        run: |
+          pytest tests/ -v --tb=short --co -q 2>/dev/null || true
+          pytest tests/ -v --tb=short --junitxml=test-results.xml
+
+      # ── Upload Test Results ───────────────────────────────────
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-py${{ matrix.python-version }}
+          path: test-results.xml
+          retention-days: 30
