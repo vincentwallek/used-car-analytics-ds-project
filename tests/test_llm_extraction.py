@@ -92,7 +92,7 @@ def test_import_does_not_use_real_database(monkeypatch, tmp_path):
 def test_import_creates_empty_results_csv_when_no_rows(monkeypatch, tmp_path):
     module, captured = import_llm_module(monkeypatch, tmp_path)
 
-    output_file = tmp_path / "llm_results2.csv"
+    output_file = tmp_path / "data" / "processed" / "llm_results2.csv"
 
     assert output_file.exists()
 
@@ -114,7 +114,7 @@ def test_top_level_processing_writes_results_csv(monkeypatch, tmp_path):
         fake_df=fake_df,
     )
 
-    output_file = tmp_path / "llm_results2.csv"
+    output_file = tmp_path / "data" / "processed" / "llm_results2.csv"
 
     assert output_file.exists()
 
@@ -149,7 +149,7 @@ def test_top_level_processing_continues_when_llm_request_fails(monkeypatch, tmp_
 
     assert "Error:" in captured_output.out
 
-    output_file = tmp_path / "llm_results2.csv"
+    output_file = tmp_path / "data" / "processed" / "llm_results2.csv"
     assert output_file.exists()
 
 

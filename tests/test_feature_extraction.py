@@ -341,7 +341,7 @@ def test_save_local_creates_csv_file(feature_module, tmp_path, monkeypatch):
 
     feature_module.save_local(df)
 
-    files = list(tmp_path.glob("listing_features_*.csv"))
+    files = list((tmp_path / "data" / "processed").glob("listing_features_*.csv"))
 
     assert len(files) == 1
 

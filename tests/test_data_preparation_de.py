@@ -450,7 +450,7 @@ def test_main_reads_csv_cleans_data_and_writes_output(tmp_path, monkeypatch, cap
 
     prep_de.main()
 
-    output_file = tmp_path / "cleaned_raw_de.csv"
+    output_file = tmp_path / "data" / "processed" / "cleaned_raw_de.csv"
 
     assert output_file.exists()
 
@@ -468,4 +468,4 @@ def test_main_reads_csv_cleans_data_and_writes_output(tmp_path, monkeypatch, cap
     assert "Loading" in captured.out
     assert "Rows before cleaning: 1" in captured.out
     assert "Rows after cleaning:  1" in captured.out
-    assert "Saved cleaned data to: cleaned_raw_de.csv" in captured.out
+    assert "Saved cleaned data to:" in captured.out and "cleaned_raw_de.csv" in captured.out
