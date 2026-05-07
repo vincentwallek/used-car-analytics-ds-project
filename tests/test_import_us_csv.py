@@ -312,7 +312,7 @@ class TestFieldMapping:
             r["year"]
             for c in insert_mock.insert.call_args_list
             for r in c.args[0]
-            if "year" in r
+            if "year" in r and "currency" in r  # filter to listings rows only
         ]
         assert years == [2020, 2021]
 
@@ -594,7 +594,8 @@ class TestBatching:
         """1200 rows → ≥3 insert calls each for listings and listing_us."""
         n = 1200
         df = _make_df(n)
-        ids = iter(range(1, n + 1))
+        import itertools
+        ids = itertools.count(1)
 
         supabase_mock = MagicMock()
 

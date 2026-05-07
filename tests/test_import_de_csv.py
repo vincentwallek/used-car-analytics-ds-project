@@ -547,7 +547,8 @@ class TestBatching:
         """1200 rows → at least 3 insert calls on 'listings' (batch_size=500)."""
         n = 1200
         df = _make_df(n)
-        ids = iter(range(1, n + 1))
+        import itertools
+        ids = itertools.count(1)
 
         supabase_mock = MagicMock()
 
